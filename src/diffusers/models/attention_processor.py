@@ -23,6 +23,7 @@ from ..image_processor import IPAdapterMaskProcessor
 from ..utils import deprecate, is_torch_xla_available, logging
 from ..utils.import_utils import is_torch_npu_available, is_torch_xla_version, is_xformers_available
 from ..utils.torch_utils import is_torch_version, maybe_allow_in_graph
+from globals import get_global_attention_mask
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -2328,16 +2329,27 @@ class FluxAttnProcessor2_0:
             if attn.norm_added_k is not None:
                 encoder_hidden_states_key_proj = attn.norm_added_k(encoder_hidden_states_key_proj)
 
+
             # attention
             query = torch.cat([encoder_hidden_states_query_proj, query], dim=2)
             key = torch.cat([encoder_hidden_states_key_proj, key], dim=2)
             value = torch.cat([encoder_hidden_states_value_proj, value], dim=2)
+
+            attention_mask = get_global_attention_mask()
+        else:
+            attention_mask = get_global_attention_mask()
+            if attention_mask:
+                text_seq_len = encoder_hidden_states.shape[1]
+                attention_mask = attention_mask[:,:,text_seq_len:,text_seq_len:]
+
 
         if image_rotary_emb is not None:
             from .embeddings import apply_rotary_emb
 
             query = apply_rotary_emb(query, image_rotary_emb)
             key = apply_rotary_emb(key, image_rotary_emb)
+
+
 
         hidden_states = F.scaled_dot_product_attention(
             query, key, value, attn_mask=attention_mask, dropout_p=0.0, is_causal=False
