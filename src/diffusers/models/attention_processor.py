@@ -2296,6 +2296,7 @@ class FluxAttnProcessor2_0:
         value = attn.to_v(hidden_states)
 
         inner_dim = key.shape[-1]
+        image_seq_len = key.shape[1]
         head_dim = inner_dim // attn.heads
 
         query = query.view(batch_size, -1, attn.heads, head_dim).transpose(1, 2)
@@ -2339,7 +2340,7 @@ class FluxAttnProcessor2_0:
         else:
             attention_mask = get_global_attention_mask()
             if attention_mask:
-                text_seq_len = encoder_hidden_states.shape[1]
+                text_seq_len = attention_mask.shape[-1] - image_seq_len
                 attention_mask = attention_mask[:,:,text_seq_len:,text_seq_len:]
 
 
