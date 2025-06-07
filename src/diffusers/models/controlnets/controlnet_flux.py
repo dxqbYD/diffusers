@@ -292,9 +292,9 @@ class FluxControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         else:
             guidance = None
         temb = (
-            self.time_text_embed(timestep=timestep, pooled_projections=pooled_projections)
+            self.time_text_embed(timestep=timestep, pooled_projection=pooled_projections)
             if guidance is None
-            else self.time_text_embed(timestep=timestep, guidance=guidance, pooled_projections=pooled_projections)
+            else self.time_text_embed(timestep=timestep, guidance=guidance, pooled_projection=pooled_projections)
         )
         encoder_hidden_states = self.context_embedder(encoder_hidden_states)
 

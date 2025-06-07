@@ -1622,7 +1622,7 @@ class CombinedTimestepGuidanceTextProjEmbeddings(nn.Module):
         self.guidance_embedder = TimestepEmbedding(in_channels=256, time_embed_dim=embedding_dim)
         self.text_embedder = PixArtAlphaTextProjection(pooled_projection_dim, embedding_dim, act_fn="silu")
 
-    def forward(self, timestep, pooled_projectionm, guidance=None):
+    def forward(self, timestep, pooled_projection, guidance=None):
         timesteps_proj = self.time_proj(timestep)
         timesteps_emb = self.timestep_embedder(timesteps_proj.to(dtype=pooled_projection.dtype))  # (N, D)
 
