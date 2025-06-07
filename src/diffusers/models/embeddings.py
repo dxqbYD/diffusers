@@ -1626,10 +1626,13 @@ class CombinedTimestepGuidanceTextProjEmbeddings(nn.Module):
         timesteps_proj = self.time_proj(timestep)
         timesteps_emb = self.timestep_embedder(timesteps_proj.to(dtype=pooled_projection.dtype))  # (N, D)
 
-        guidance_proj = self.time_proj(guidance)
-        guidance_emb = self.guidance_embedder(guidance_proj.to(dtype=pooled_projection.dtype))  # (N, D)
+        if guidance is not None:
+            guidance_proj = self.time_proj(guidance)
+            guidance_emb = self.guidance_embedder(guidance_proj.to(dtype=pooled_projection.dtype))  # (N, D)
 
-        time_guidance_emb = timesteps_emb + guidance_emb
+            time_guidance_emb = timesteps_emb + guidance_emb
+        else:
+            time_guidance_emb = timesteps_emb
 
         pooled_projections = self.text_embedder(pooled_projection)
         conditioning = time_guidance_emb + pooled_projections
