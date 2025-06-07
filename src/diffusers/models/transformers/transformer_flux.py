@@ -449,9 +449,9 @@ class FluxTransformer2DModel(
             guidance = guidance.to(hidden_states.dtype) * 1000
 
         temb = (
-            self.time_text_embed(timestep, pooled_projections)
+            self.time_text_embed(timestep=timestep, pooled_projections=pooled_projections)
             if guidance is None
-            else self.time_text_embed(timestep, guidance, pooled_projections)
+            else self.time_text_embed(timestep=timestep, guidance=guidance, pooled_projections=pooled_projections)
         )
         encoder_hidden_states = self.context_embedder(encoder_hidden_states)
 
